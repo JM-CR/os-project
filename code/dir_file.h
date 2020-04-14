@@ -21,7 +21,6 @@
 struct s_dir {
 	int tipo;
 	char *nombre;
-    unsigned int leidos;
 };
 
 typedef struct s_dir Dir_t;

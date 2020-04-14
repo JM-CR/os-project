@@ -5,7 +5,7 @@
 // System and aplication specific headers
 // ------------------------------------------
 #include "dir_file.h"
-#include "view.h"
+#include "ncurses.h"
 
 #define MAX_LEIDOS 128
 

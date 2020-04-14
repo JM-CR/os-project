@@ -6,7 +6,7 @@
 // System and aplication specific headers
 // ------------------------------------------
 #include <stdlib.h>
-#include "view.h"
+#include "ncurses.h"
 
 
 // -----------------------------
