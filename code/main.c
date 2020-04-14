@@ -11,16 +11,17 @@
 
 int main(void) {
 	// Cargar contexto actual
-	Dir_t res[MAX_LEIDOS];
-	int max = leerDirectorio(".", res), cursor = 0;
+	Dir_t elementos[MAX_LEIDOS];
+	int leidos = leerDirectorio(".", elementos), cursor = 0;
 	char c;
 
 	// Cargar entorno gráfico
 	configurarVentana();
 	do {
-		imprimirEstado(cursor, max);
-		imprimirArchivos(res, max, cursor);
-		c = leerTeclado(res, &max, &cursor);
+		erase();
+		imprimirEstado(cursor, leidos);
+		imprimirArchivos(elementos, leidos, cursor);
+		c = leerTeclado(elementos, &leidos, &cursor);
 	} while ( c != 'q' );
 
 	// Quit

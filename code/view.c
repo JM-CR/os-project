@@ -36,8 +36,8 @@ static void cargarSeleccion( Dir_t *elementos, int *leidos, int *cursor ) {
     // Procesar
     if ( esArchivo(&seleccion) ) {
         // Terminar ejecución
-        printw("Seleccionaste %s", nombre);
         endwin();
+        printf("Seleccionaste %s\n\n", nombre);
         exit(EXIT_SUCCESS);
     } else if ( esDirectorio(&seleccion) ) {
         // Refrescar
