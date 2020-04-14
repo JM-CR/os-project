@@ -1,56 +1,26 @@
-#include <curses.h>
-#include <stdlib.h>
+// File: main.c
+// Date: 11/04/20
+
+// ------------------------------------------
+// System and aplication specific headers
+// ------------------------------------------
 #include "dir_file.h"
+#include "view.h"
 
 #define MAX_LEIDOS 128
 
 int main(void) {
 	// Cargar contexto actual
 	Dir_t res[MAX_LEIDOS];
-	unsigned int max = leerDirectorio(".", res), i = 0, c;
+	int max = leerDirectorio(".", res), cursor = 0;
+	char c;
 
-	// Configurar ncurses
-	initscr();
-	raw();
-	noecho();
-
-	// Start scanning
+	// Cargar entorno gráfico
+	configurarVentana();
 	do {
-		// Print dirs & files
-		for ( unsigned int j = 0; j < max; ++j ) {
-			if ( j == i ) {
-				attron(A_REVERSE);
-			}
-			mvprintw(5 + j, 5, res[j].nombre);
-			attroff(A_REVERSE);
-		}
-		move(5 + i, 4);
-		refresh();
-		
-		// Read keyboard entry
-		c = getch();
-		switch ( c ) {
-		case 'A':  // Arriba
-			i = (i > 0) ? i - 1 : max - 1;
-			break;
-		case 'B':  // Abajo
-			i = (i < max - 1) ? i + 1 : 0;
-			break;
-		case '\n': 
-			if ( !esDirectorio(&res[i]) ) {
-				move(3, 5);
-				printw("Seleccionaste %s", res[i].nombre);
-				exit(EXIT_SUCCESS);
-			} else {
-				i = 0;
-				continue;
-			}
-			break;
-		}
-
-		// Current position
-		move(2, 5);
-		printw("Estoy en %d. Lei: %d", i, max);
+		imprimirEstado(cursor, max);
+		imprimirArchivos(res, max, cursor);
+		c = leerTeclado(res, &max, &cursor);
 	} while ( c != 'q' );
 
 	// Quit

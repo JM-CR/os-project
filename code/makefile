@@ -13,7 +13,7 @@ DEFS =
 BIN = main
 
 # Object files from which $BIN depends
-OBJS = dir_file.o
+OBJS = dir_file.o view.o
 
 # This default rule compiles the executable program
 $(BIN): $(OBJS) $(BIN).c
