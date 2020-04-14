@@ -4,16 +4,16 @@
 CFLAGS = -Wall -g
 
 # External libraries
-LIBS = 
+LIBS = -lncurses
 
 # Pre-defined macros for conditional compilation
-DEFS =  
+DEFS = 
 
 # The final executable program file
 BIN = main
 
 # Object files from which $BIN depends
-OBJS = node.o graph.o dijkstra.o
+OBJS = dir_file.o
 
 # This default rule compiles the executable program
 $(BIN): $(OBJS) $(BIN).c
