@@ -1,5 +1,5 @@
-// Revisar view.h para más información.
-// File: view.c
+// Revisar ncurses.h para más información.
+// File: ncurses.c
 // Date: 14/04/20
 
 // ------------------------------------------

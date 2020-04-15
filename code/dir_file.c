@@ -90,8 +90,15 @@ char *rutaActual( void ) {
 }
 
 char *concatena( char *origen, char *destino ) {
+	// Añadir origen
 	char buffer[PATH_MAX];
 	strcpy(buffer, origen);
-	strcat(buffer, "/");
+
+	// Verificar si es root
+	if ( strcmp(origen, "/") != 0 ) {
+		strcat(buffer, "/");
+	}
+
+	// Añadir destino
 	return 	strcat(buffer, destino);
 }

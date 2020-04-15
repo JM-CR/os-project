@@ -1,6 +1,9 @@
 // Manejo de la parte gráfica de ncurses.
-// File: view.h
+// File: ncurses.h
 // Date: 14/04/20
+
+#ifndef NCURSES_H
+#define NCURSES_H
 
 // -----------------------------
 // System headers
@@ -47,3 +50,5 @@ char leerTeclado( Dir_t *elementos, int *leidos, int *cursor );
  * @param ruta Ruta del directorio actual.
  */
 void imprimirEstado( int cursor, char *ruta );
+
+#endif
