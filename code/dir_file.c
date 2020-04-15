@@ -24,6 +24,24 @@
 
 /* Private functions */
 
+/**
+ * Ordena un arreglo de strings alfabéticamente.
+ *
+ * @param elementos Arreglo a ordenar.
+ */
+static void ordenaAlfabeticamente( Dir_t *elementos, int leidos ) {
+	Dir_t temp;
+	for( int i = 0; i < leidos - 1; ++i ) {
+		for( int j = i + 1; j < leidos; ++j ) {
+			if( strcmp(elementos[i].nombre, elementos[j].nombre) > 0 ) {
+				temp = elementos[i];
+				elementos[i] = elementos[j];
+				elementos[j] = temp;
+			}
+		}
+	}	
+}
+
 
 // -----------------------------
 // Public elements
@@ -43,6 +61,7 @@ int leerDirectorio( char *nombre, Dir_t contenedor[] ) {
 		contenedor[i].nombre = strdup(dp->d_name);
 		++i;
 	}
+	ordenaAlfabeticamente(contenedor, i);
 
 	// Cerrar
 	closedir(dir);
