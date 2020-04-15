@@ -52,4 +52,20 @@ bool esDirectorio( Dir_t *elemento );
  */
 bool esArchivo( Dir_t *elemento );
 
+/**
+ * Devuelve la ruta del directorio actual.
+ *
+ * @return Ruta absoluta.
+ */
+char *rutaActual( void );
+
+/**
+ * Hace la concatenación de dos cadenas.
+ *
+ * @param origen Primer cadena.
+ * @param destino Segunda cadena.
+ * @return Cadena unida.
+ */
+char *concatena( char *origen, char *destino );
+
 #endif

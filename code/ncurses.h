@@ -44,6 +44,6 @@ char leerTeclado( Dir_t *elementos, int *leidos, int *cursor );
  * Muestra el estado actual de la ventana.
  *
  * @param cursor Posición del cursor.
- * @param leidos Número de elementos leídos.
+ * @param ruta Ruta del directorio actual.
  */
-void imprimirEstado( int cursor, int leidos );
+void imprimirEstado( int cursor, char *ruta );

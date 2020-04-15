@@ -12,19 +12,20 @@
 int main(void) {
 	// Cargar contexto actual
 	Dir_t elementos[MAX_LEIDOS];
-	int leidos = leerDirectorio(".", elementos), cursor = 0;
 	char c;
+	int cursor = 0;
+	int leidos = leerDirectorio(rutaActual(), elementos);
 
 	// Cargar entorno gráfico
 	configurarVentana();
 	do {
 		erase();
-		imprimirEstado(cursor, leidos);
+		imprimirEstado(cursor, rutaActual());
 		imprimirArchivos(elementos, leidos, cursor);
 		c = leerTeclado(elementos, &leidos, &cursor);
 	} while ( c != 'q' );
 
-	// Quit
+	// Salir
 	endwin();
 	return 0;
 }

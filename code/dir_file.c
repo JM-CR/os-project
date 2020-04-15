@@ -7,6 +7,8 @@
 // ------------------------------------------
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <limits.h>
 #include "dir_file.h"
 
 
@@ -61,4 +63,16 @@ bool esArchivo( Dir_t *elemento ) {
 	} else {
         return false;
     }
+}
+
+char *rutaActual( void ) {
+	char ruta[PATH_MAX];
+	return getcwd(ruta, sizeof(ruta));
+}
+
+char *concatena( char *origen, char *destino ) {
+	char buffer[PATH_MAX];
+	strcpy(buffer, origen);
+	strcat(buffer, "/");
+	return 	strcat(buffer, destino);
 }
