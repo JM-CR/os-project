@@ -26,12 +26,54 @@
  * Imprime el contenido de un archivo.
  *
  * @param mapeo Direcciones mapeadas.
+ * @param cursorX Posición del cursor en X.
+ * @param cursorY Posición del cursor en Y.
+ * @return Número de líneas mostradas.
  */
-static void imprimeArchivo( char *mapeo ) {
-    for ( unsigned int i = 0 ; i < 25 ; ++i ) {
+static int imprimeArchivo( char *mapeo, int cursorX, int cursorY ) {
+    // Mostrar contenido
+    int lineas = 25;
+    for ( unsigned int i = 0 ; i < lineas ; ++i ) {
         char *l = hazLinea(mapeo, i * 16);
-        mvprintw(i + 1, 3, l);
+        mvprintw(i + 1, 2, l);
     }
+
+    // Posicionar cursor
+    move(cursorX + 1, cursorY + 11);
+    refresh();
+
+    return lineas;
+}
+
+/**
+ * Mueve el cursor dentro del editor.
+ *
+ * @param cursorX Posición del cursor en X.
+ * @param cursorY Posición del cursor en Y.
+ * @param lineas Cantidad de líneas mostradas en pantalla.
+ * @return Caracter leido.
+ */
+static char moverCursor( int *cursorX, int *cursorY, int lineas ) {
+    // Leer caracter
+    char caracter = getch();
+
+    // Procesar
+    switch ( caracter ) {
+    case 'A':  /* Arriba */
+        *cursorX = (*cursorX > 0) ? *cursorX - 1 : lineas - 1;
+        break;
+    case 'B':  /* Abajo */
+        *cursorX = (*cursorX < lineas - 1) ? *cursorX + 1 : 0;
+        break;
+    case 'C':  /* Izquierda */
+        *cursorY = (*cursorY < 45) ? *cursorY + 3 : 0;
+        break;
+    case 'D':  /* Derecha */
+        *cursorY = (*cursorY > 2) ? *cursorY - 3 : 45;
+        break;
+    }
+
+    return caracter;
 }
 
 /**
@@ -49,16 +91,17 @@ static void cargarSeleccion( Dir_t *elementos, int *leidos, int *cursor ) {
 
     // Procesar
     if ( esArchivo(&seleccion) ) {
-        // Abrir editor
+        // Abrir archivo
+        int lineas, cursorX = 0, cursorY = 0;
         int fd = abrirArchivo(destino);
         char c, *mapeo = mapearArchivo(fd);
+
+        // Abrir editor
         do {
             erase();
-            imprimeArchivo(mapeo);
-            c = getch();
-            refresh();
+            lineas = imprimeArchivo(mapeo, cursorX, cursorY);
+            c = moverCursor(&cursorX, &cursorY, lineas);
         } while ( c != 'q' );
-
         close(fd);
 
     } else if ( esDirectorio(&seleccion) ) {
