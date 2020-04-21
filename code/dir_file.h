@@ -68,4 +68,38 @@ char *rutaActual( void );
  */
 char *concatena( char *origen, char *destino );
 
+/**
+ * Muestra la dirección, contenido hexadecimal y caracteres de una
+ * línea de texto de 16 elementos.
+ *
+ * @param base Inicio del archivo mapeado a memoria.
+ * @param dir Offset hexadecimal.
+ * @return Línea formateada.
+ */
+char *hazLinea( char *base, int dir );
+
+/**
+ * Abre un archivo en modo lectura.
+ *
+ * @param ruta Ruta del archivo.
+ * @return File descriptor.
+ */
+int abrirArchivo( char *ruta );
+
+/**
+ * Calcula el tamaño de un archivo.
+ *
+ * @param fd File descriptor.
+ * @return File size.
+ */
+int tamanoArchivo( int fd );
+
+/**
+ * Realiza un mapeo a las direcciones de un objeto en memoria.
+ *
+ * @param fd File descriptor.
+ * @return Inicio del mapeo.
+ */
+char *mapearArchivo( int fd );
+
 #endif

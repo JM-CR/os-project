@@ -23,6 +23,18 @@
 /* Private functions */
 
 /**
+ * Imprime el contenido de un archivo.
+ *
+ * @param mapeo Direcciones mapeadas.
+ */
+static void imprimeArchivo( char *mapeo ) {
+    for ( unsigned int i = 0 ; i < 25 ; ++i ) {
+        char *l = hazLinea(mapeo, i * 16);
+        mvprintw(i + 1, 3, l);
+    }
+}
+
+/**
  * Ejecuta una acción según el elemento seleccionado.
  *
  * @param elementos Contenedor con los elementos.
@@ -37,10 +49,18 @@ static void cargarSeleccion( Dir_t *elementos, int *leidos, int *cursor ) {
 
     // Procesar
     if ( esArchivo(&seleccion) ) {
-        // Terminar ejecución
-        endwin();
-        printf("\nSeleccionaste %s\n\n", destino);
-        exit(EXIT_SUCCESS);
+        // Abrir editor
+        int fd = abrirArchivo(destino);
+        char c, *mapeo = mapearArchivo(fd);
+        do {
+            erase();
+            imprimeArchivo(mapeo);
+            c = getch();
+            refresh();
+        } while ( c != 'q' );
+
+        close(fd);
+
     } else if ( esDirectorio(&seleccion) ) {
         // Cambiar ruta
         chdir(destino);

@@ -5,10 +5,18 @@
 // ------------------------------------------
 // System and application specific headers
 // ------------------------------------------
+#include <stdio.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <limits.h>
+
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+
 #include "dir_file.h"
 
 
@@ -101,4 +109,62 @@ char *concatena( char *origen, char *destino ) {
 
 	// Añadir destino
 	return 	strcat(buffer, destino);
+}
+
+char *hazLinea( char *base, int dir ) {
+    // Inicializar
+    char linea[100];  /* Tamaño máximo */
+    int o = 0;        /* Offset */
+    
+    // Dirección
+    o += sprintf(linea, "%08x ", dir);
+
+    // Contenido hexadecimal
+    unsigned char a, b, c, d;
+    for ( int i = 0; i < 4; i++ ) {
+        a = base[dir+4 * i+0];
+        b = base[dir+4 * i+1];
+        c = base[dir+4 * i+2];
+        d = base[dir+4 * i+3];
+        o += sprintf(&linea[o], "%02x %02x %02x %02x ", a, b, c, d);
+    }
+
+    // Caracteres
+    for( int i = 0; i < 16; i++ ) {
+        if (isprint(base[dir+i])) {
+            o += sprintf(&linea[o], "%c", base[dir + i]);
+        } else {
+            o += sprintf(&linea[o], ".");
+        }
+    }
+    sprintf(&linea[o], "\n");
+
+    // Crear copia del texto
+    return strdup(linea);
+}
+
+int abrirArchivo( char *ruta ) {
+    int fd;
+    if ( (fd = open(ruta, O_RDONLY)) == -1) {
+        perror("Error abriendo el archivo");
+        exit(EXIT_FAILURE);
+    }
+	return fd;
+}
+
+int tamanoArchivo( int fd ) {
+    struct stat st;
+    fstat(fd, &st);
+    return st.st_size;
+}
+
+char *mapearArchivo( int fd ) {
+    int fs = tamanoArchivo(fd);
+    char *mapeo = mmap(0, fs, PROT_READ, MAP_SHARED, fd, 0);
+    if ( mapeo == MAP_FAILED ) {
+        close(fd);
+        perror("Error mapeando el archivo");
+        exit(EXIT_FAILURE);
+    }
+    return mapeo;
 }
