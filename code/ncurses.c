@@ -113,7 +113,7 @@ static void cargarSeleccion( Dir_t *elementos, int *leidos, int *cursor ) {
             erase();
             lineas = imprimeArchivo(mapeo, cursorX, cursorY);
             c = moverCursor(&cursorX, &cursorY, lineas);
-        } while ( c != 'q' );
+        } while ( c != 24 );
         close(fd);
 
     } else if ( esDirectorio(&seleccion) ) {

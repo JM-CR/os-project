@@ -23,7 +23,7 @@ int main(void) {
 		imprimirEstado(cursor, rutaActual());
 		imprimirArchivos(elementos, leidos, cursor);
 		c = leerTeclado(elementos, &leidos, &cursor);
-	} while ( c != 'q' );
+	} while ( c != 24 );
 
 	// Salir
 	endwin();
