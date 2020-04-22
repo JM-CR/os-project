@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <ctype.h>
 #include "ncurses.h"
 
 
@@ -98,7 +99,7 @@ static int imprimeArchivo( char *mapeo, int cursorX, int cursorY ) {
  * @param lineas Cantidad de líneas mostradas en pantalla.
  * @return Caracter leido.
  */
-static int moverCursor( int *cursorX, int *cursorY, int lineas ) {
+static int moverCursor( int *cursorX, int *cursorY, int lineas, char *mapeo) {
     // Leer caracter
     int caracter = leeChar();
 
@@ -128,6 +129,23 @@ static int moverCursor( int *cursorX, int *cursorY, int lineas ) {
             *cursorY -= 1;
         }
         break;
+
+    default: 
+        if(*cursorX<16){
+            char n= tolower(caracter);
+            if((n>='0' && n<='9') || (n>='a' && n<= 'f')){
+                mapeo[obtenIndex(*cursorX, *cursorY)] = n;
+            }
+        }
+        else{
+            if(isprint(caracter)){
+                mapeo[obtenIndex(*cursorX,*cursorY)]=caracter;
+                char *l=hazLinea(mapeo,*cursorY*16);
+                mvprintw(*cursorY,0,l);
+            }
+        }
+        break;
+
     }
 
     return caracter;
@@ -157,7 +175,7 @@ static void cargarSeleccion( Dir_t *elementos, int *leidos, int *cursor ) {
         do {
             erase();
             lineas = imprimeArchivo(mapeo, cursorX, cursorY);
-            c = moverCursor(&cursorX, &cursorY, lineas);
+            c = moverCursor(&cursorX, &cursorY, lineas, mapeo);
         } while ( c != 24 );
         close(fd);
 

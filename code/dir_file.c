@@ -145,7 +145,7 @@ char *hazLinea( char *base, int dir ) {
 
 int abrirArchivo( char *ruta ) {
     int fd;
-    if ( (fd = open(ruta, O_RDONLY)) == -1) {
+    if ( (fd = open(ruta, O_RDWR)) == -1) {
         perror("Error abriendo el archivo");
         exit(EXIT_FAILURE);
     }
@@ -160,7 +160,7 @@ int tamanoArchivo( int fd ) {
 
 char *mapearArchivo( int fd ) {
     int fs = tamanoArchivo(fd);
-    char *mapeo = mmap(0, fs, PROT_READ, MAP_SHARED, fd, 0);
+    char *mapeo = mmap(0, fs, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if ( mapeo == MAP_FAILED ) {
         close(fd);
         perror("Error mapeando el archivo");
