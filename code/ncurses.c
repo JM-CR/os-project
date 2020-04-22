@@ -66,10 +66,22 @@ static char moverCursor( int *cursorX, int *cursorY, int lineas ) {
         *cursorX = (*cursorX < lineas - 1) ? *cursorX + 1 : 0;
         break;
     case 'C':  /* Izquierda */
-        *cursorY = (*cursorY < 45) ? *cursorY + 3 : 0;
+        if ( *cursorY < 48 ) {
+            *cursorY += 3;
+        } else if ( *cursorY < 63 ) {
+            *cursorY += 1;
+        } else if ( *cursorY == 63 ) {
+            *cursorY = 0;
+        }
         break;
     case 'D':  /* Derecha */
-        *cursorY = (*cursorY > 2) ? *cursorY - 3 : 45;
+        if ( *cursorY == 0 ) {
+            *cursorY = 63;
+        } else if ( *cursorY < 49 ) {
+            *cursorY -= 3;
+        } else if ( *cursorY < 64 ) {
+            *cursorY -= 1;
+        }
         break;
     }
 
