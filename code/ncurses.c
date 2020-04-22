@@ -6,6 +6,7 @@
 // System and aplication specific headers
 // ------------------------------------------
 #include <stdlib.h>
+#include <stdio.h>
 #include <unistd.h>
 #include "ncurses.h"
 
@@ -21,6 +22,23 @@
 /* Private global variables */
 
 /* Private functions */
+
+/**
+ * Traduce las coordenadas del cursor a index para el arreglo map.
+ *
+ * @param cursorX Posición del cursor en X.
+ * @param cursorY Posición del cursor en Y.
+ * @return Index para el archivo mapeado.
+ */
+static unsigned int obtenIndex( int cursorX, int cursorY ) {
+    unsigned int index = 0;
+    if ( cursorY < 48 ) {
+        index = cursorX * 16 + cursorY / 3;
+    } else {
+        index = cursorX * 16 + (cursorY - 48);
+    }
+    return index;
+}
 
 /**
  * Imprime el contenido de un archivo.
@@ -65,7 +83,7 @@ static char moverCursor( int *cursorX, int *cursorY, int lineas ) {
     case 'B':  /* Abajo */
         *cursorX = (*cursorX < lineas - 1) ? *cursorX + 1 : 0;
         break;
-    case 'C':  /* Izquierda */
+    case 'C':  /* Derecha */
         if ( *cursorY < 48 ) {
             *cursorY += 3;
         } else if ( *cursorY < 63 ) {
@@ -74,12 +92,12 @@ static char moverCursor( int *cursorX, int *cursorY, int lineas ) {
             *cursorY = 0;
         }
         break;
-    case 'D':  /* Derecha */
+    case 'D':  /* Izquierda */
         if ( *cursorY == 0 ) {
             *cursorY = 63;
-        } else if ( *cursorY < 49 ) {
+        } else if ( *cursorY <= 48 ) {
             *cursorY -= 3;
-        } else if ( *cursorY < 64 ) {
+        } else if ( *cursorY <= 63 ) {
             *cursorY -= 1;
         }
         break;
