@@ -24,6 +24,33 @@
 /* Private functions */
 
 /**
+ * Lee un caracter para usar en el editor.
+ * 
+ * @return Caracter leido en forma de número.
+ */
+int leeChar( void ) {
+    // Inicializar
+    int chars[5];
+    int ch, i = 0;
+
+    // Espera activa
+    nodelay(stdscr, TRUE);
+    while((ch = getch()) == ERR );
+    ungetch(ch);
+    while((ch = getch()) != ERR ) {
+        chars[i++] = ch;
+    }
+
+    // Convertir char a número
+    int res = 0;
+    for( int j = 0; j < i; j++ ) {
+        res <<= 8;
+        res |= chars[j];
+    }
+    return res;
+}
+
+/**
  * Traduce las coordenadas del cursor a index para el arreglo map.
  *
  * @param cursorX Posición del cursor en X.
@@ -71,19 +98,19 @@ static int imprimeArchivo( char *mapeo, int cursorX, int cursorY ) {
  * @param lineas Cantidad de líneas mostradas en pantalla.
  * @return Caracter leido.
  */
-static char moverCursor( int *cursorX, int *cursorY, int lineas ) {
+static int moverCursor( int *cursorX, int *cursorY, int lineas ) {
     // Leer caracter
-    char caracter = getch();
+    int caracter = leeChar();
 
     // Procesar
     switch ( caracter ) {
-    case 'A':  /* Arriba */
+    case 0x1B5B41:  /* Arriba */
         *cursorX = (*cursorX > 0) ? *cursorX - 1 : lineas - 1;
         break;
-    case 'B':  /* Abajo */
+    case 0x1B5B42:  /* Abajo */
         *cursorX = (*cursorX < lineas - 1) ? *cursorX + 1 : 0;
         break;
-    case 'C':  /* Derecha */
+    case 0x1B5B43:  /* Derecha */
         if ( *cursorY < 48 ) {
             *cursorY += 3;
         } else if ( *cursorY < 63 ) {
@@ -92,7 +119,7 @@ static char moverCursor( int *cursorX, int *cursorY, int lineas ) {
             *cursorY = 0;
         }
         break;
-    case 'D':  /* Izquierda */
+    case 0x1B5B44:  /* Izquierda */
         if ( *cursorY == 0 ) {
             *cursorY = 63;
         } else if ( *cursorY <= 48 ) {
