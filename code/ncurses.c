@@ -16,11 +16,9 @@
 // Private elements
 // -----------------------------
 
-/* Private macros and constants */
+/* Private macros and constants */ 
 
-/* Private types */
-
-/* Private global variables */
+#define MAX_LINEAS 25   // Lineas en pantalla
 
 /* Private functions */
 
@@ -72,23 +70,33 @@ static unsigned int obtenIndex( int cursorX, int cursorY ) {
  * Imprime el contenido de un archivo.
  *
  * @param mapeo Direcciones mapeadas.
+ * @param lineaActual Linea de lectura activa.
+ * @param total Total de líneas.
  * @param cursorX Posición del cursor en X.
  * @param cursorY Posición del cursor en Y.
- * @return Número de líneas mostradas.
  */
-static int imprimeArchivo( char *mapeo, int cursorX, int cursorY ) {
+static void imprimeContenido( char *mapeo, int *lineaActual, int total, int *cursorX, int *cursorY ) {
+    // Límite de archivo
+    if ( *lineaActual < 0 ) {
+        *lineaActual = total - 1;
+        *cursorX = total % MAX_LINEAS - 1;
+    } else if ( *lineaActual > total - 1 ) {
+        *lineaActual = 0;
+        *cursorX = 0;
+    }
+    
     // Mostrar contenido
-    int lineas = 25;
-    for ( unsigned int i = 0 ; i < lineas ; ++i ) {
+    int lineaInicial = (*lineaActual / MAX_LINEAS) * MAX_LINEAS;
+    int rango = lineaInicial + MAX_LINEAS;
+    int lineaFinal = rango > total ? total : rango;
+    for ( unsigned int i = lineaInicial, j = 0; i < lineaFinal; ++i, ++j ) {
         char *l = hazLinea(mapeo, i * 16);
-        mvprintw(i + 1, 2, l);
+        mvprintw(j + 1, 2, l);
     }
 
     // Posicionar cursor
-    move(cursorX + 1, cursorY + 11);
+    move(*cursorX + 1, *cursorY + 11);
     refresh();
-
-    return lineas;
 }
 
 /**
@@ -96,20 +104,23 @@ static int imprimeArchivo( char *mapeo, int cursorX, int cursorY ) {
  *
  * @param cursorX Posición del cursor en X.
  * @param cursorY Posición del cursor en Y.
- * @param lineas Cantidad de líneas mostradas en pantalla.
+ * @param lineaActual Línea de lectura activa.
+ * @param mapeo Archivo mapeado en memoria.
  * @return Caracter leido.
  */
-static int moverCursor( int *cursorX, int *cursorY, int lineas, char *mapeo) {
+static int moverCursor( int *cursorX, int *cursorY, int *lineaActual, char *mapeo ) {
     // Leer caracter
     int caracter = leeChar();
 
     // Procesar
     switch ( caracter ) {
     case 0x1B5B41:  /* Arriba */
-        *cursorX = (*cursorX > 0) ? *cursorX - 1 : lineas - 1;
+        *cursorX = (*cursorX > 0) ? *cursorX - 1 : MAX_LINEAS - 1;
+        (*lineaActual)--;
         break;
     case 0x1B5B42:  /* Abajo */
-        *cursorX = (*cursorX < lineas - 1) ? *cursorX + 1 : 0;
+        *cursorX = (*cursorX < MAX_LINEAS - 1) ? *cursorX + 1 : 0;
+        (*lineaActual)++;
         break;
     case 0x1B5B43:  /* Derecha */
         if ( *cursorY < 48 ) {
@@ -140,8 +151,6 @@ static int moverCursor( int *cursorX, int *cursorY, int lineas, char *mapeo) {
         else{
             if(isprint(caracter)){
                 mapeo[obtenIndex(*cursorX,*cursorY)]=caracter;
-                char *l=hazLinea(mapeo,*cursorY*16);
-                mvprintw(*cursorY,0,l);
             }
         }
         break;
@@ -167,15 +176,16 @@ static void cargarSeleccion( Dir_t *elementos, int *leidos, int *cursor ) {
     // Procesar
     if ( esArchivo(&seleccion) ) {
         // Abrir archivo
-        int lineas, cursorX = 0, cursorY = 0;
         int fd = abrirArchivo(destino);
+        int totalLineas = totalDeLineas(fd);
+        int lineaActual = 0, cursorX = 0, cursorY = 0;
         char c, *mapeo = mapearArchivo(fd);
 
         // Abrir editor
         do {
             erase();
-            lineas = imprimeArchivo(mapeo, cursorX, cursorY);
-            c = moverCursor(&cursorX, &cursorY, lineas, mapeo);
+            imprimeContenido(mapeo, &lineaActual, totalLineas, &cursorX, &cursorY);
+            c = moverCursor(&cursorX, &cursorY, &lineaActual, mapeo);
         } while ( c != 24 );
         close(fd);
 

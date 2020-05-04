@@ -102,4 +102,12 @@ int tamanoArchivo( int fd );
  */
 char *mapearArchivo( int fd );
 
+/**
+ * Obtiene el total de líneas a imprimir de un archivo.
+ *
+ * @param fd File descriptor.
+ * @return Número de líneas.
+ */
+int totalDeLineas( int fd );
+
 #endif

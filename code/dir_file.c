@@ -5,6 +5,7 @@
 // ------------------------------------------
 // System and application specific headers
 // ------------------------------------------
+#include <math.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -23,12 +24,6 @@
 // -----------------------------
 // Private elements
 // -----------------------------
-
-/* Private macros and constants */
-
-/* Private types */
-
-/* Private global variables */
 
 /* Private functions */
 
@@ -167,4 +162,9 @@ char *mapearArchivo( int fd ) {
         exit(EXIT_FAILURE);
     }
     return mapeo;
+}
+
+int totalDeLineas( int fd ) {
+    double total = tamanoArchivo(fd) / 16.0;
+    return ceil(total);
 }
