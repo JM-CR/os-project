@@ -1,4 +1,4 @@
-// Funcioens para controlar el editor de texto.
+// Funciones para controlar el editor hexadecimal.
 // Author: Josue Mosiah Contreras Rocha
 // File: editor.h
 // Date: 17/02/20
