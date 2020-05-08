@@ -39,7 +39,7 @@ static void cargarSeleccion( Dir_t *elementos, int *leidos ) {
     // Inicializar
     Dir_t seleccion = elementos[cursor];
     char *nombre = seleccion.nombre;
-    char *destino = concatena(rutaActual(), nombre);
+    char *destino = creaRutaDestino(rutaActual(), nombre);
 
     // Procesar
     if ( esArchivo(&seleccion) ) {

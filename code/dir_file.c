@@ -92,7 +92,7 @@ char *rutaActual( void ) {
 	return getcwd(ruta, sizeof(ruta));
 }
 
-char *concatena( char *origen, char *destino ) {
+char *creaRutaDestino( char *origen, char *destino ) {
 	// Añadir origen
 	char buffer[PATH_MAX];
 	strcpy(buffer, origen);

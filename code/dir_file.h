@@ -60,13 +60,13 @@ bool esArchivo( Dir_t *elemento );
 char *rutaActual( void );
 
 /**
- * Hace la concatenación de dos cadenas.
+ * Hace la concatenación de dos rutas.
  *
- * @param origen Primer cadena.
- * @param destino Segunda cadena.
- * @return Cadena unida.
+ * @param origen Ruta absoluta.
+ * @param destino Elemento destino.
+ * @return <origen>/<destino>.
  */
-char *concatena( char *origen, char *destino );
+char *creaRutaDestino( char *origen, char *destino );
 
 /**
  * Muestra la dirección, contenido hexadecimal y caracteres de una
