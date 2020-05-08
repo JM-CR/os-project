@@ -18,7 +18,8 @@
 
 /* Private macros and constants */ 
 
-#define MAX_LINEAS 25   // Lineas en pantalla
+#define MAX_LINEAS 25     // Lineas en pantalla
+#define MAX_ARCHIVOS 23   // Archivos listados en pantalla
 
 /* Private functions */
 
@@ -210,21 +211,31 @@ void configurarVentana( void ) {
 	noecho();    // Suprimir caracteres introducidos
 }
 
-void imprimirArchivos( Dir_t *elementos, size_t leidos, int cursor ) {
-    // Vaciar contenedor
-    for ( unsigned int i = 0; i < leidos; ++i ) {
+void imprimirArchivos( Dir_t *elementos, size_t leidos, int *cursor ) {
+    // Límite del contenedor
+    if ( *cursor < 0 ) {
+        *cursor = leidos - 1;
+    } else if ( *cursor > leidos - 1 ) {
+        *cursor = 0;
+    }
+    
+    // Mostrar contenido
+    int lineaInicial = (*cursor / MAX_ARCHIVOS) * MAX_ARCHIVOS;
+    int rango = lineaInicial + MAX_ARCHIVOS;
+    int lineaFinal = rango > leidos ? leidos : rango;
+    for ( unsigned int i = lineaInicial, j = 0; i < lineaFinal; ++i, ++j ) {
         // Mostrar cursor
-        if ( i == cursor ) {
+        if ( i == *cursor ) {
             attron(A_REVERSE);  /* Inicio subrayado */
         }
 
         // Añadir contenido
-        mvprintw(5 + i, 5, (elementos + i)->nombre);
+        mvprintw(5 + j, 5, (elementos + i)->nombre);
         attroff(A_REVERSE);  /* Fin subrayado */
     }
 
     // Posicionar cursor
-    move(5 + cursor, 4);
+    move(5 + *cursor % MAX_ARCHIVOS, 4);
     refresh();
 }
 

@@ -30,7 +30,7 @@ void configurarVentana( void );
  * @param leidos Número de elementos leidos.
  * @param cursor Posición del cursor.
  */
-void imprimirArchivos( Dir_t *elementos, size_t leidos, int cursor );
+void imprimirArchivos( Dir_t *elementos, size_t leidos, int *cursor );
 
 /**
  * Lee un caracter del teclado y lo procesa.

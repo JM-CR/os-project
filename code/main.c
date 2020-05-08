@@ -21,7 +21,7 @@ int main(void) {
 	do {
 		erase();
 		imprimirEstado(cursor, rutaActual());
-		imprimirArchivos(elementos, leidos, cursor);
+		imprimirArchivos(elementos, leidos, &cursor);
 		c = leerTeclado(elementos, &leidos, &cursor);
 	} while ( c != 24 );
 
