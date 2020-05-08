@@ -3,7 +3,7 @@
 // Date: 14/04/20
 
 // ------------------------------------------
-// System and aplication specific headers
+// System and application specific headers
 // ------------------------------------------
 #include <curses.h>
 #include <unistd.h>
@@ -58,17 +58,17 @@ static void cargarSeleccion( Dir_t *elementos, int *leidos ) {
  * @param leidos Número de elementos leídos.
  * @return Caracter leido.
  */
-static char leerTeclado( Dir_t *elementos, int *leidos ) {
+static char accionDelUsuario( Dir_t *elementos, int *leidos ) {
     // Leer caracter
     char caracter = getch();
 
     // Procesar
     switch ( caracter ) {
     case 'A':  /* Arriba */
-        cursor = (cursor > 0) ? cursor - 1 : *leidos - 1;
+        cursor = (cursor > 0) ? (cursor - 1) : (*leidos - 1);
         break;
     case 'B':  /* Abajo */
-        cursor = (cursor < *leidos - 1) ? cursor + 1 : 0;
+        cursor = (cursor < *leidos - 1) ? (cursor + 1) : 0;
         break;
     case '\n': /* Enter */
         cargarSeleccion(elementos, leidos);
@@ -83,7 +83,7 @@ static char leerTeclado( Dir_t *elementos, int *leidos ) {
  * @param elementos Contenedor con los elementos.
  * @param leidos Número de elementos leidos.
  */
-static void imprimirArchivos( Dir_t *elementos, size_t leidos ) {
+static void listarElementos( Dir_t *elementos, size_t leidos ) {
     // Verificar límites del contenedor
     if ( cursor < 0 ) {
         cursor = leidos - 1;
@@ -96,13 +96,11 @@ static void imprimirArchivos( Dir_t *elementos, size_t leidos ) {
     int rango = lineaInicial + MAX_ARCHIVOS;
     int lineaFinal = rango > leidos ? leidos : rango;
 
-    // Imprimir
-    for ( unsigned int i = lineaInicial, j = 0; i < lineaFinal; ++i, ++j ) {
+    for ( unsigned int j = 0, i = lineaInicial; i < lineaFinal; ++i, ++j ) {
         // Mostrar cursor
         if ( i == cursor ) {
             attron(A_REVERSE);  /* Inicio subrayado */
         }
-
         // Añadir contenido
         mvprintw(4 + j, 5, (elementos + i)->nombre);
         attroff(A_REVERSE);  /* Fin subrayado */
@@ -116,10 +114,9 @@ static void imprimirArchivos( Dir_t *elementos, size_t leidos ) {
 /**
  * Muestra el estado actual de la ventana.
  *
- * @param cursor Posición del cursor.
- * @param ruta Ruta del directorio actual.
+ * @param ruta Ruta absoluta.
  */
-static void imprimirEstado( char *ruta ) {
+static void estadoActual( char *ruta ) {
     move(2, 5);
     printw("Cursor: %d. Ruta actual: %s", cursor, ruta);
 }
@@ -141,9 +138,9 @@ void mostrarInterfaz( void ) {
 	configurarVentana();
 	do {
 		erase();
-		imprimirEstado(rutaActual());
-		imprimirArchivos(elementos, leidos);
-		caracter = leerTeclado(elementos, &leidos);
+		estadoActual(rutaActual());
+		listarElementos(elementos, leidos);
+		caracter = accionDelUsuario(elementos, &leidos);
 	} while ( caracter != 24 );
 
 	// Salir

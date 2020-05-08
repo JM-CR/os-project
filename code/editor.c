@@ -31,11 +31,16 @@ static int lineaActiva;   // Línea de lectura activa.
  */
 static int leeChar( void ) {
     // Espera activa | Sin bloqueo
-    int i = 0, ch, chars[5];
+    int ch;
     nodelay(stdscr, TRUE);
-    while((ch = getch()) == ERR ); 
+    while((ch = getch()) == ERR );
+    
+    // Procesar caracter
+    int chars[5], i = 0;
     ungetch(ch);
-    while((ch = getch()) != ERR ) chars[i++] = ch;
+    while((ch = getch()) != ERR ) { 
+        chars[i++] = ch;
+    }
 
     // Convertir char a número
     int res = 0;
@@ -47,16 +52,16 @@ static int leeChar( void ) {
 }
 
 /**
- * Traduce las coordenadas del cursor a index para el arreglo map.
+ * Traduce las coordenadas del cursor.
  *
- * @return Index para el archivo mapeado.
+ * @return Posición de inserción.
  */
-static unsigned int obtenIndex( void ) {
+static unsigned int indiceInsercion( void ) {
     unsigned int index = 0;
     if ( cursorY < 48 ) {
-        index = cursorX * 16 + cursorY / 3;
+        index = lineaActiva * 16 + cursorY / 3;
     } else {
-        index = cursorX * 16 + (cursorY - 48);
+        index = lineaActiva * 16 + (cursorY - 48);
     }
     return index;
 }
@@ -65,25 +70,23 @@ static unsigned int obtenIndex( void ) {
  * Imprime el contenido de un archivo.
  *
  * @param mapeo Direcciones mapeadas.
- * @param total Total de líneas a imprimir.
+ * @param lineasLeidas Total de líneas a imprimir.
  */
-static void imprimeContenido( char *mapeo, int total ) {
-    // Validar límite de archivo
+static void muestraArchivo( char *mapeo, int lineasLeidas ) {
+    // Validar límites del archivo
     if ( lineaActiva < 0 ) {
-        lineaActiva = total - 1;
-        cursorX = total % MAX_LINEAS - 1;
-    } else if ( lineaActiva > total - 1 ) {
-        lineaActiva = 0;
-        cursorX = 0;
+        lineaActiva = lineasLeidas - 1;
+        cursorX = (lineasLeidas % MAX_LINEAS) - 1;
+    } else if ( lineaActiva > lineasLeidas - 1 ) {
+        lineaActiva = cursorX = 0;
     }
     
     // Calcular segmento activo
     int lineaInicial = (lineaActiva / MAX_LINEAS) * MAX_LINEAS;
     int rango = lineaInicial + MAX_LINEAS;
-    int lineaFinal = rango > total ? total : rango;
+    int lineaFinal = rango > lineasLeidas ? lineasLeidas : rango;
 
-    // Imprimir
-    for ( unsigned int i = lineaInicial, j = 0; i < lineaFinal; ++i, ++j ) {
+    for ( unsigned int j = 0, i = lineaInicial; i < lineaFinal; ++i, ++j ) {
         char *l = hazLinea(mapeo, i * 16);
         mvprintw(j + 1, 2, l);
     }
@@ -93,59 +96,79 @@ static void imprimeContenido( char *mapeo, int total ) {
     refresh();
 }
 
+/**
+ * Mueve el cursor a la derecha.
+ */
+static void moverDerecha( void ) {
+    if ( cursorY < 48 ) {
+        cursorY += 3;
+    } else if ( cursorY < 63 ) {
+        cursorY += 1;
+    } else if ( cursorY == 63 ) {
+        cursorY = 0;
+    }
+}
+
+/**
+ * Mueve el cursor a la izquierda.
+ */
+static void moverIzquierda( void ) {
+    if ( cursorY == 0 ) {
+        cursorY = 63;
+    } else if ( cursorY <= 48 ) {
+        cursorY -= 3;
+    } else if ( cursorY <= 63 ) {
+        cursorY -= 1;
+    }
+}
+
+/**
+ * Procesa un caracter para editar el archivo.
+ *
+ * @param caracter Caracter introducido.
+ * @param mapeo Archivo mapeado en memoria.
+ */
+static void editaArchivo( int caracter, char *mapeo ) {
+    if ( cursorX < 16 ) {
+        char n = tolower(caracter);
+        if ( (n >= '0' && n <= '9') || (n >= 'a' && n <= 'f') ) {
+            mapeo[indiceInsercion()] = n;
+        }
+    } else {
+        if ( isprint(caracter) ) {
+            mapeo[indiceInsercion()] = caracter;
+        }
+    }
+}
+
  /**
- * Mueve el cursor dentro del editor.
+ * Controla la interacción del usuario con el editor.
  *
  * @param mapeo Archivo mapeado en memoria.
  * @return Caracter leido.
  */
-static int moverCursor( char *mapeo ) {
+static int accionDelUsuario( char *mapeo ) {
     // Leer caracter
     int caracter = leeChar();
 
     // Procesar
     switch ( caracter ) {
     case 0x1B5B41:  /* Arriba */
-        cursorX = (cursorX > 0) ? cursorX - 1 : MAX_LINEAS - 1;
-        (lineaActiva)--;
+        cursorX = (cursorX > 0) ? (cursorX - 1) : (MAX_LINEAS - 1);
+        lineaActiva--;
         break;
     case 0x1B5B42:  /* Abajo */
-        cursorX = (cursorX < MAX_LINEAS - 1) ? cursorX + 1 : 0;
-        (lineaActiva)++;
+        cursorX = (cursorX < MAX_LINEAS - 1) ? (cursorX + 1) : 0;
+        lineaActiva++;
         break;
-    case 0x1B5B43:  /* Derecha */
-        if ( cursorY < 48 ) {
-            cursorY += 3;
-        } else if ( cursorY < 63 ) {
-            cursorY += 1;
-        } else if ( cursorY == 63 ) {
-            cursorY = 0;
-        }
+    case 0x1B5B43:
+        moverDerecha();
         break;
-    case 0x1B5B44:  /* Izquierda */
-        if ( cursorY == 0 ) {
-            cursorY = 63;
-        } else if ( cursorY <= 48 ) {
-            cursorY -= 3;
-        } else if ( cursorY <= 63 ) {
-            cursorY -= 1;
-        }
+    case 0x1B5B44:
+        moverIzquierda();
         break;
-
     default: 
-        if ( cursorX < 16 ) {
-            char n = tolower(caracter);
-            if((n>='0' && n<='9') || (n>='a' && n<= 'f')){
-                mapeo[obtenIndex()] = n;
-            }
-        }
-        else{
-            if(isprint(caracter)){
-                mapeo[obtenIndex()] = caracter;
-            }
-        }
-        break;
-
+        editaArchivo(caracter, mapeo);
     }
 
     return caracter;
@@ -161,16 +184,16 @@ static int moverCursor( char *mapeo ) {
 void abrirEditor( char *ruta ) {
     // Abrir archivo
     int fd = abrirArchivo(ruta);
-    int totalLineas = totalDeLineas(fd);
+    int lineasLeidas = totalDeLineas(fd);
     char *mapeo = mapearArchivo(fd);
 
     // Abrir editor
-    char c;
+    int caracter;
     lineaActiva = cursorX = cursorY = 0;
     do {
         erase();
-        imprimeContenido(mapeo, totalLineas);
-        c = moverCursor(mapeo);
-    } while ( c != 24 );
+        muestraArchivo(mapeo, lineasLeidas);
+        caracter = accionDelUsuario(mapeo);
+    } while ( caracter != 24 );
     close(fd);
 }

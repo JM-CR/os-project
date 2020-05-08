@@ -1,4 +1,4 @@
-// Permite controlar el menu de archivos.
+// Controla el menu para seleccionar archivos.
 // File: menu.h
 // Date: 14/04/20
 
