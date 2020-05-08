@@ -9,12 +9,15 @@
 // System headers
 // -----------------------------
 #include <curses.h>
-#include "dir_file.h"
-
+#include "editor.h"
 
 // -----------------------------
 // Public interface
 // -----------------------------
+
+/* Constants */
+
+#define MAX_ARCHIVOS 23   // Archivos listados en pantalla
 
 /* Function prototypes */
 
