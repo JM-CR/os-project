@@ -161,6 +161,21 @@ static void editaArchivo( int caracter, char *mapeo ) {
     }
 }
 
+void borrarCaracter(char *mapeo){
+    if ( cursorY < 48 ) {
+        mapeo[indiceInsercion()]= delch();
+        mapeo[indiceInsercion()]= delch();
+        if(cursorY>1){
+            moverIzquierda();
+        }  
+    } else {
+        mapeo[indiceInsercion()]= delch();
+        if(cursorY>48){
+            moverIzquierda();
+        }
+    }    
+}
+
  /**
  * Controla la interacción del usuario con el editor.
  *
@@ -186,6 +201,9 @@ static int accionDelUsuario( char *mapeo ) {
         break;
     case 0x1B5B44:
         moverIzquierda();
+        break;
+    case 0x7F:
+        borrarCaracter(mapeo);
         break;
     default: 
         editaArchivo(caracter, mapeo);
