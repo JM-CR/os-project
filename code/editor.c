@@ -205,27 +205,28 @@ void abrirEditor( char *ruta) {
     // Abrir archivo
     int fdl = abrirArchivo(ruta, O_RDONLY);
     int fde = abrirArchivo(ruta, O_RDWR);
+    char *mapeoR = mapearArchivo(fdl, 0);
+    char *mapeoRW = mapearArchivo(fde, 1);
+    memcpy(mapeoRW, mapeoR, tamanoArchivo(fdl));
 
-    int lineasLeidas = totalDeLineas(fdl);
-    char *mapeo = mapearArchivo(fdl,0);
-    char *mapeo2 = mapearArchivo(fde,1);
-    int fs = tamanoArchivo(fdl);
-    memcpy(mapeo, mapeo2, fs);
     // Abrir editor
     int caracter;
+    int lineasLeidas = totalDeLineas(fdl);
     lineaActiva = cursorX = cursorY = 0;
     do {
         erase();
-        muestraArchivo(mapeo2, lineasLeidas);
-        caracter = accionDelUsuario(mapeo2);
+        muestraArchivo(mapeoRW, lineasLeidas);
+        caracter = accionDelUsuario(mapeoRW);
     } while ( caracter != 24 );
 
-    if (munmap(mapeo2, tamanoArchivo(fde)) == -1) {
+    // Cerrar editor
+    if ( munmap(mapeoR, tamanoArchivo(fdl)) == -1 ) {
         perror("Error un-mmapping the file");
     }
-    if (munmap(mapeo, tamanoArchivo(fdl)) == -1) {
+    if ( munmap(mapeoRW, tamanoArchivo(fde)) == -1 ) {
         perror("Error un-mmapping the file");
     }
+
     close(fdl);
     close(fde);
 }
