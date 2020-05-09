@@ -138,11 +138,17 @@ char *hazLinea( char *base, int dir ) {
     return strdup(linea);
 }
 
-int abrirArchivo( char *ruta ) {
+int abrirArchivo( char *ruta, int modo ) {
     int fd;
-    if ( (fd = open(ruta, O_RDWR)) == -1) {
+    if (fd = open(ruta, modo)) == -1) {
         perror("Error abriendo el archivo");
         exit(EXIT_FAILURE);
+    }
+    else{
+        fd = open(ruta, O_RDONLY)) == -1) {
+        perror("Error abriendo el archivo");
+        exit(EXIT_FAILURE);
+
     }
 	return fd;
 }

@@ -6,11 +6,14 @@
 // ------------------------------------------
 // System and aplication specific headers
 // ------------------------------------------
+#include<sys/types.h>
+#include<sys/stat.h>
+#include<fcntl.h>
+
 #include <ctype.h>
 #include <unistd.h>
 #include <curses.h>
 #include "editor.h"
-
 
 // -----------------------------
 // Private elements
@@ -122,12 +125,6 @@ static void moverIzquierda( void ) {
     }
 }
 
- unsigned char ahex2bin (unsigned char MSB, unsigned char LSB){  
-    if (MSB > '9') MSB -= 7;   // Convert MSB value to a contiguous range (0x30..0x3F)  
-    if (LSB > '9') LSB -= 7;   // Convert LSB value to a contiguous range (0x30..0x3F)  
-    return (MSB <<4) | (LSB & 0x0F);   // Make a result byte  using only low nibbles of MSB and LSB thus neglecting the input register case
- }  
-
 /**
  * Procesa un caracter para editar el archivo.
  *
@@ -135,10 +132,10 @@ static void moverIzquierda( void ) {
  * @param mapeo Archivo mapeado en memoria.
  */
 static void editaArchivo( int caracter, char *mapeo ) {
-    if ( cursorY < 48 ) {
+    if ( cursorX < 16 ) {
         char n = tolower(caracter);
-        if ( isxdigit(caracter) && isxdigit(n) ) {
-            mapeo[indiceInsercion()] = ahex2bin(caracter, n);
+        if ( (n >= '0' && n <= '9') || (n >= 'a' && n <= 'f') ) {
+            mapeo[indiceInsercion()] = n;
         }
     } else {
         if ( isprint(caracter) ) {
@@ -187,19 +184,31 @@ static int accionDelUsuario( char *mapeo ) {
 
 /* Implementation of the public functions */
 
-void abrirEditor( char *ruta ) {
+void abrirEditor( char *ruta) {
     // Abrir archivo
-    int fd = abrirArchivo(ruta);
-    int lineasLeidas = totalDeLineas(fd);
-    char *mapeo = mapearArchivo(fd);
+    int fdl = abrirArchivo(ruta, O_RDONLY);
+    int fde = abrirArchivo(ruta, O_RDWR);
 
+    int lineasLeidas = totalDeLineas(fd);
+    char *mapeo = mapearArchivo(fdl);
+    char *mapeo2 = mapearArchivo2(fde);
+    int fs = tamanoArchivo(fd);
+    memcpy(mapeo, mapeo2, fs);
     // Abrir editor
     int caracter;
     lineaActiva = cursorX = cursorY = 0;
     do {
         erase();
-        muestraArchivo(mapeo, lineasLeidas);
-        caracter = accionDelUsuario(mapeo);
+        muestraArchivo(mapeo2, lineasLeidas);
+        caracter = accionDelUsuario(mapeo2);
     } while ( caracter != 24 );
-    close(fd);
+
+    if (munmap(mapeo2, tamanoArchivo(fde)) == -1) {
+        perror("Error un-mmapping the file");
+    }
+    if (munmap(mapeo, tamanoArchivo(fdl)) == -1) {
+        perror("Error un-mmapping the file");
+    }
+    close(fdl);
+    close(fde);
 }

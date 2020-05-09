@@ -84,7 +84,7 @@ char *hazLinea( char *base, int dir );
  * @param ruta Ruta del archivo.
  * @return File descriptor.
  */
-int abrirArchivo( char *ruta );
+int abrirArchivo( char *ruta. int modo );
 
 /**
  * Calcula el tamaño de un archivo.
