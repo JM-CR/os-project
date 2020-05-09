@@ -10,6 +10,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#include <string.h>
+#include <sys/mman.h>
+
 #include <ctype.h>
 #include <unistd.h>
 #include <curses.h>
@@ -203,10 +206,10 @@ void abrirEditor( char *ruta) {
     int fdl = abrirArchivo(ruta, O_RDONLY);
     int fde = abrirArchivo(ruta, O_RDWR);
 
-    int lineasLeidas = totalDeLineas(fd);
-    char *mapeo = mapearArchivo(fdl);
-    char *mapeo2 = mapearArchivo2(fde);
-    int fs = tamanoArchivo(fd);
+    int lineasLeidas = totalDeLineas(fdl);
+    char *mapeo = mapearArchivo(fdl,0);
+    char *mapeo2 = mapearArchivo(fde,1);
+    int fs = tamanoArchivo(fdl);
     memcpy(mapeo, mapeo2, fs);
     // Abrir editor
     int caracter;

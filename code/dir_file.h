@@ -84,7 +84,7 @@ char *hazLinea( char *base, int dir );
  * @param ruta Ruta del archivo.
  * @return File descriptor.
  */
-int abrirArchivo( char *ruta. int modo );
+int abrirArchivo( char *ruta, int modo );
 
 /**
  * Calcula el tamaño de un archivo.
@@ -100,7 +100,7 @@ int tamanoArchivo( int fd );
  * @param fd File descriptor.
  * @return Inicio del mapeo.
  */
-char *mapearArchivo( int fd );
+char *mapearArchivo( int fd0, int flag );
 
 /**
  * Obtiene el total de líneas a imprimir de un archivo.

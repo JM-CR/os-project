@@ -19,6 +19,7 @@
 #include <sys/mman.h>
 
 #include "dir_file.h"
+#define SLACK 1024
 
 
 // -----------------------------
@@ -140,12 +141,11 @@ char *hazLinea( char *base, int dir ) {
 
 int abrirArchivo( char *ruta, int modo ) {
     int fd;
-    if (fd = open(ruta, modo)) == -1) {
+    if ((fd = open(ruta, modo)) == -1) {
         perror("Error abriendo el archivo");
         exit(EXIT_FAILURE);
     }
-    else{
-        fd = open(ruta, O_RDONLY)) == -1) {
+    else if((fd = open(ruta, O_RDONLY)) == -1) {
         perror("Error abriendo el archivo");
         exit(EXIT_FAILURE);
 
@@ -159,9 +159,15 @@ int tamanoArchivo( int fd ) {
     return st.st_size;
 }
 
-char *mapearArchivo( int fd ) {
+char *mapearArchivo( int fd , int flag) {
+    char *mapeo;
     int fs = tamanoArchivo(fd);
-    char *mapeo = mmap(0, fs, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    if (flag == 0){
+        mapeo = mmap(0, fs, PROT_READ, MAP_SHARED, fd, 0);
+    }
+    else if(flag == 1) {
+        mapeo = mmap(0, fs+SLACK, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    }
     if ( mapeo == MAP_FAILED ) {
         close(fd);
         perror("Error mapeando el archivo");
