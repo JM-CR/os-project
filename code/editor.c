@@ -6,11 +6,14 @@
 // ------------------------------------------
 // System and aplication specific headers
 // ------------------------------------------
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include <ctype.h>
 #include <unistd.h>
 #include <curses.h>
 #include "editor.h"
-
 
 // -----------------------------
 // Private elements
@@ -195,19 +198,31 @@ static int accionDelUsuario( char *mapeo ) {
 
 /* Implementation of the public functions */
 
-void abrirEditor( char *ruta ) {
+void abrirEditor( char *ruta) {
     // Abrir archivo
-    int fd = abrirArchivo(ruta);
-    int lineasLeidas = totalDeLineas(fd);
-    char *mapeo = mapearArchivo(fd);
+    int fdl = abrirArchivo(ruta, O_RDONLY);
+    int fde = abrirArchivo(ruta, O_RDWR);
 
+    int lineasLeidas = totalDeLineas(fd);
+    char *mapeo = mapearArchivo(fdl);
+    char *mapeo2 = mapearArchivo2(fde);
+    int fs = tamanoArchivo(fd);
+    memcpy(mapeo, mapeo2, fs);
     // Abrir editor
     int caracter;
     lineaActiva = cursorX = cursorY = 0;
     do {
         erase();
-        muestraArchivo(mapeo, lineasLeidas);
-        caracter = accionDelUsuario(mapeo);
+        muestraArchivo(mapeo2, lineasLeidas);
+        caracter = accionDelUsuario(mapeo2);
     } while ( caracter != 24 );
-    close(fd);
+
+    if (munmap(mapeo2, tamanoArchivo(fde)) == -1) {
+        perror("Error un-mmapping the file");
+    }
+    if (munmap(mapeo, tamanoArchivo(fdl)) == -1) {
+        perror("Error un-mmapping the file");
+    }
+    close(fdl);
+    close(fde);
 }

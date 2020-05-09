@@ -1,0 +1,34 @@
+cEadman 2
+ +{a�� ¿Por qúe l00d tramas/a para uf STM-1? 2c55 Mbps)
+    2. ¿EcspuUto de dermarcación es lo mismo que las tributarias?
+    3. ¿Qué es la norma G703?
+    f. ¿El canal de datos es para la gestión?
+    5. ¿Qué es el order-wire?
+    6. ¿Para qud� se usan las 9ddolumnas de POH?
+        a. ¿Qué hacen los encabezados de alto orden?
+
+    7. ¿Qué son las operaciones SDH?
+        a. Mapeo
+        b. Alineación
+        c. Multiplexaje
+        d. Rellenado
+
+    8. ¿Máximo de servicios por anillo?
+        a. ¿Aunque sea un STM-4 y aún haya espacio?
+
+    9. ¿En PDH no había reloj?
+        a. ¿Se sincronizaban con bit stuffing?
+
+    10. ¿Un crossconector puede estar conectado a otro?
+    11. ¿Qué alarmas pueden venir en el examen?
+        a. LOS
+        b. Path Unequipped
+        c. AIS -> Conmutación de puertos en caso
+        d. RDI -> 
+        e. LOF -> Se perdió la sincronía
+            + Mala conmutación por prioridades
+            + Cadenas mal definidas
+
+* Entrega proyecto *
+    1. Gestión
+    2. ¿Un documento con todo o separadod
