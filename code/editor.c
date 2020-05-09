@@ -122,11 +122,18 @@ static void moverIzquierda( void ) {
     }
 }
 
- unsigned char ahex2bin (unsigned char MSB, unsigned char LSB){  
-    if (MSB > '9') MSB -= 7;   // Convert MSB value to a contiguous range (0x30..0x3F)  
-    if (LSB > '9') LSB -= 7;   // Convert LSB value to a contiguous range (0x30..0x3F)  
-    return (MSB <<4) | (LSB & 0x0F);   // Make a result byte  using only low nibbles of MSB and LSB thus neglecting the input register case
- }  
+/**
+ * Convierte dos caracteres a un número hexadecimal.
+ *
+ * @param MSB Caracter más significativo.
+ * @param LSB Caracter menos significativo.
+ * @return Número hexadecimal.
+ */
+unsigned char hex2bin ( unsigned char MSB, unsigned char LSB ) {  
+    if (MSB > '9') MSB -= 7;
+    if (LSB > '9') LSB -= 7;
+    return (MSB <<4) | (LSB & 0x0F);
+}  
 
 /**
  * Procesa un caracter para editar el archivo.
@@ -136,9 +143,10 @@ static void moverIzquierda( void ) {
  */
 static void editaArchivo( int caracter, char *mapeo ) {
     if ( cursorY < 48 ) {
-        char n = tolower(caracter);
-        if ( isxdigit(caracter) && isxdigit(n) ) {
-            mapeo[indiceInsercion()] = ahex2bin(caracter, n);
+        char c1 = tolower(caracter);
+        char c2 = tolower(leeChar());
+        if ( isxdigit(c1) && isxdigit(c2) ) {
+            mapeo[indiceInsercion()] = hex2bin(c1, c2);
         }
     } else {
         if ( isprint(caracter) ) {
