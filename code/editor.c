@@ -184,7 +184,7 @@ static void editaArchivo( int caracter, char *mapeo ) {
 }
 
 static void borrarCaracter(char *mapeo){
-    int len = sizeof(mapeo) / sizeof(mapeo[0]);
+    int len = 500;//sizeof(mapeo);
     if ( cursorY < 48 ) {
         mapeo[indiceInsercion()]= delch();
         mapeo[indiceInsercion()]= delch();
@@ -199,13 +199,13 @@ static void borrarCaracter(char *mapeo){
     } else {
         mapeo[indiceInsercion()]= delch();   
         int c= indiceInsercion(); 
-        for(int i=0;i<400;i++){
+        for(int i=0;i<len-1;i++){
             mapeo[c+i]=mapeo[c+1+i];
         }
         if(cursorY>48){
             moverIzquierda();
         }
-        //*mapeo-=1;
+        //mapeo[len-1]=NULL;
     } 
 }
 
