@@ -176,9 +176,11 @@ static void editaArchivo( int caracter, char *mapeo ) {
             sprintf(msg, "Combinacion invalida.\n");
         }
     } else {
-        if ( isprint(caracter) ) {
+        if ( caracter < 256 && isprint(caracter) ) {
             mapeo[indiceInsercion()] = caracter;
-            sprintf(msg, "Ultimo valor insertado: %c.\n", caracter);
+            sprintf(msg, "Ultimo valor insertado: %c\n", caracter);
+        } else {
+            sprintf(msg, "Caracter invalido.\n");
         }
     }
 }
