@@ -25,6 +25,7 @@ static int cursorX;       // Posición del cursor en X.
 static int cursorY;       // Posición del cursor en Y.
 static int lineaActiva;   // Línea de lectura activa.
 static char msg[50];      // Mensaje global de estado
+static int lenMapeo=0;
 
 /* Private functions */
 
@@ -184,28 +185,27 @@ static void editaArchivo( int caracter, char *mapeo ) {
 }
 
 static void borrarCaracter(char *mapeo){
-    int len = 500;//sizeof(mapeo);
     if ( cursorY < 48 ) {
         mapeo[indiceInsercion()]= delch();
         mapeo[indiceInsercion()]= delch();
         int c= indiceInsercion(); 
-        for(int i=0;i<len-1;i++){
+        for(int i=0;i<lenMapeo-1;i++){
             mapeo[c+i]=mapeo[c+1+i];
             mapeo[c+i+1]=mapeo[c+2+i];
+            
         }
         if(cursorY>1){
             moverIzquierda();
-        }  
+        } 
     } else {
         mapeo[indiceInsercion()]= delch();   
         int c= indiceInsercion(); 
-        for(int i=0;i<len-1;i++){
+        for(int i=0;i<lenMapeo-1;i++){
             mapeo[c+i]=mapeo[c+1+i];
         }
         if(cursorY>48){
             moverIzquierda();
         }
-        //mapeo[len-1]=NULL;
     } 
 }
 
@@ -261,6 +261,7 @@ void abrirEditor( char *ruta) {
     char *mapeoR = mapearArchivo(fdl, 0);
     char *mapeoRW = mapearArchivo(fde, 1);
     memcpy(mapeoRW, mapeoR, tamanoArchivo(fdl));
+    lenMapeo=tamanoArchivo(fdl);
 
     // Abrir editor
     int caracter;
