@@ -207,6 +207,18 @@ static void borrarCaracter(char *mapeo){
     mapeo[len-1]=' '; 
 }
 
+void insertarChar(char *mapeo){
+    int len = strlen(mapeo);
+    int c= indiceInsercion(); 
+    for(int i=0;i<len;i++){
+        int temp= mapeo[c+1+i];
+        mapeo[c+i+1]=mapeo[c+i];
+        mapeo[c+i+2]=temp;
+    }
+    insch(getch());
+
+}
+
  /**
  * Controla la interacción del usuario con el editor.
  *
@@ -237,6 +249,9 @@ static int accionDelUsuario( char *mapeo ) {
         break;
     case 0x7F:
         borrarCaracter(mapeo);
+        break;
+    case 0x1B5B327E:
+        insertarChar(mapeo);
         break;
     default: 
         editaArchivo(caracter, mapeo);
