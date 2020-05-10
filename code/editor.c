@@ -184,18 +184,29 @@ static void editaArchivo( int caracter, char *mapeo ) {
 }
 
 static void borrarCaracter(char *mapeo){
+    int len = sizeof(mapeo) / sizeof(mapeo[0]);
     if ( cursorY < 48 ) {
         mapeo[indiceInsercion()]= delch();
         mapeo[indiceInsercion()]= delch();
+        int c= indiceInsercion(); 
+        for(int i=0;i<len-1;i++){
+            mapeo[c+i]=mapeo[c+1+i];
+            mapeo[c+i+1]=mapeo[c+2+i];
+        }
         if(cursorY>1){
             moverIzquierda();
         }  
     } else {
-        mapeo[indiceInsercion()]= delch();
+        mapeo[indiceInsercion()]= delch();   
+        int c= indiceInsercion(); 
+        for(int i=0;i<400;i++){
+            mapeo[c+i]=mapeo[c+1+i];
+        }
         if(cursorY>48){
             moverIzquierda();
         }
-    }    
+        //*mapeo-=1;
+    } 
 }
 
  /**
