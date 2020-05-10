@@ -141,7 +141,7 @@ void mostrarInterfaz( void ) {
 		estadoActual(rutaActual());
 		listarElementos(elementos, leidos);
 		caracter = accionDelUsuario(elementos, &leidos);
-	} while ( caracter != 24 );
+	} while ( caracter != 0x18 );
 
 	// Salir
 	endwin();

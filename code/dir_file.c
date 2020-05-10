@@ -1,4 +1,4 @@
-// Revisar dir_files.h para más información.
+// Revisar dir_f�les.h para más información.
 // File: dir_file.c
 // Date: 14/04/20
 

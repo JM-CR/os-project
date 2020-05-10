@@ -6,16 +6,13 @@
 // ------------------------------------------
 // System and aplication specific headers
 // ------------------------------------------
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
-
-#include <string.h>
-#include <sys/mman.h>
-
 #include <ctype.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <curses.h>
+#include <sys/mman.h>
 #include "editor.h"
 
 // -----------------------------
@@ -27,6 +24,7 @@
 static int cursorX;       // Posición del cursor en X.
 static int cursorY;       // Posición del cursor en Y.
 static int lineaActiva;   // Línea de lectura activa.
+static char msg[50];      // Mensaje global de estado
 
 /* Private functions */
 
@@ -94,7 +92,8 @@ static void muestraArchivo( char *mapeo, int lineasLeidas ) {
 
     for ( unsigned int j = 0, i = lineaInicial; i < lineaFinal; ++i, ++j ) {
         char *l = hazLinea(mapeo, i * 16);
-        mvprintw(j + 1, 2, l);
+        move(j + 1, 2);
+        addstr(l);
     }
 
     // Posicionar cursor
@@ -129,16 +128,29 @@ static void moverIzquierda( void ) {
 }
 
 /**
+ * Imprime un mensaje de estado en la ventana.
+ */
+static void imprimeEstado( void ) {
+    move(27, 5); addstr(msg);
+    mvprintw(
+        29, 5, "Fila: %d. Columna: %d. Entrada %s.", 
+        cursorX, 
+        (cursorY < 48) ? (cursorY / 3 + 1) : (cursorY - 47),
+        (cursorY < 48) ? "hexadecimal" : "alfanumerica"
+    );
+}
+
+/**
  * Convierte dos caracteres a un número hexadecimal.
  *
  * @param MSB Caracter más significativo.
  * @param LSB Caracter menos significativo.
  * @return Número hexadecimal.
  */
-unsigned char hex2bin ( unsigned char MSB, unsigned char LSB ) {  
-    if (MSB > '9') MSB -= 7;
-    if (LSB > '9') LSB -= 7;
-    return (MSB <<4) | (LSB & 0x0F);
+unsigned char char2hex ( unsigned char MSB, unsigned char LSB ) {  
+    if ( MSB > '9' ) MSB -= 7;
+    if ( LSB > '9' ) LSB -= 7;
+    return (MSB << 4) | (LSB & 0x0F);
 }  
 
 /**
@@ -149,19 +161,29 @@ unsigned char hex2bin ( unsigned char MSB, unsigned char LSB ) {
  */
 static void editaArchivo( int caracter, char *mapeo ) {
     if ( cursorY < 48 ) {
+        // Leer primer caracter
         char c1 = tolower(caracter);
+        mvprintw(27, 5, "Valor detectado: 0x%c.\n", c1);
+
+        // Leer segunda caracter
         char c2 = tolower(leeChar());
+
+        // Validar
         if ( isxdigit(c1) && isxdigit(c2) ) {
-            mapeo[indiceInsercion()] = hex2bin(c1, c2);
+            mapeo[indiceInsercion()] = char2hex(c1, c2);
+            sprintf(msg, "Ultimo valor insertado: 0x%c%c.\n", c1, c2);
+        } else {
+            sprintf(msg, "Combinacion invalida.\n");
         }
     } else {
         if ( isprint(caracter) ) {
             mapeo[indiceInsercion()] = caracter;
+            sprintf(msg, "Ultimo valor insertado: %c.\n", caracter);
         }
     }
 }
 
-void borrarCaracter(char *mapeo){
+static void borrarCaracter(char *mapeo){
     if ( cursorY < 48 ) {
         mapeo[indiceInsercion()]= delch();
         mapeo[indiceInsercion()]= delch();
@@ -190,17 +212,19 @@ static int accionDelUsuario( char *mapeo ) {
     switch ( caracter ) {
     case 0x1B5B41:  /* Arriba */
         cursorX = (cursorX > 0) ? (cursorX - 1) : (MAX_LINEAS - 1);
-        lineaActiva--;
+        lineaActiva--; 
         break;
     case 0x1B5B42:  /* Abajo */
         cursorX = (cursorX < MAX_LINEAS - 1) ? (cursorX + 1) : 0;
-        lineaActiva++;
+        lineaActiva++; 
         break;
     case 0x1B5B43:
-        moverDerecha();
+        moverDerecha(); 
         break;
     case 0x1B5B44:
-        moverIzquierda();
+        moverIzquierda(); 
+        break;
+    case 0x18:  /* Salir */
         break;
     case 0x7F:
         borrarCaracter(mapeo);
@@ -222,7 +246,7 @@ static int accionDelUsuario( char *mapeo ) {
 void abrirEditor( char *ruta) {
     // Abrir archivo
     int fdl = abrirArchivo(ruta, O_RDONLY);
-    int fde = abrirArchivo(ruta, O_RDWR);
+    int fde = abrirArchivo(ruta, O_RDWR | O_CREAT);
     char *mapeoR = mapearArchivo(fdl, 0);
     char *mapeoRW = mapearArchivo(fde, 1);
     memcpy(mapeoRW, mapeoR, tamanoArchivo(fdl));
@@ -230,21 +254,22 @@ void abrirEditor( char *ruta) {
     // Abrir editor
     int caracter;
     int lineasLeidas = totalDeLineas(fdl);
+    sprintf(msg, " ");
     lineaActiva = cursorX = cursorY = 0;
     do {
         erase();
+        imprimeEstado();
         muestraArchivo(mapeoRW, lineasLeidas);
         caracter = accionDelUsuario(mapeoRW);
-    } while ( caracter != 24 );
+    } while ( caracter != 0x18 );
 
-    // Cerrar editor
+    // Cerrar archivo
     if ( munmap(mapeoR, tamanoArchivo(fdl)) == -1 ) {
         perror("Error un-mmapping the file");
     }
     if ( munmap(mapeoRW, tamanoArchivo(fde)) == -1 ) {
         perror("Error un-mmapping the file");
     }
-
     close(fdl);
     close(fde);
 }
