@@ -25,6 +25,7 @@ static int cursorX;       // Posición del cursor en X.
 static int cursorY;       // Posición del cursor en Y.
 static int lineaActiva;   // Línea de lectura activa.
 static char msg[50];      // Mensaje global de estado
+static int option = 0;    // Tipo de edicion
 
 /* Private functions */
 
@@ -138,6 +139,10 @@ static void imprimeEstado( void ) {
         (cursorY < 48) ? (cursorY / 3 + 1) : (cursorY - 47),
         (cursorY < 48) ? "hexadecimal" : "alfanumerica"
     );
+    mvprintw(
+        30, 5, "Modo de edicion: %s.", 
+        (option == 0) ? "Editar" : "Insertar"
+    );
 }
 
 /**
@@ -207,37 +212,26 @@ static void borrarCaracter(char *mapeo){
     mapeo[len-1]=' '; 
 }
 
-// void insertarChar(char *mapeo){
-//     int len = strlen(mapeo);
-//     int c= indiceInsercion(); 
-//     for(int i=0;i<len;i++){
-//         int temp= mapeo[c+1+i];
-//         mapeo[c+i+1]=mapeo[c+i];
-//         mapeo[c+i+2]=temp;
-//     }
-//     insch(getch());
-// }
-
-static void insertarChar(char *mapeo){
+static void insertarChar(int caracter, char *mapeo){
     int lenMapeo = strlen(mapeo);
     int c= indiceInsercion(); 
     if ( cursorY < 48 ) {
-        for(int i = lenMapeo; i > 0 ; i-- ){
-            mapeo[i-c]=mapeo[i-c-1];
-            mapeo[i-c-1]=mapeo[i-c-2];
+        for(int i = lenMapeo; i > c ; i-- ){
+            mapeo[i]=mapeo[i-1];
+            mapeo[i-1]=mapeo[i-2];
         }
         if(cursorY>1){
             moverDerecha();
         } 
     } else {
-        for(int i=lenMapeo;i>0;i--){
-            mapeo[i-c]=mapeo[i-c-1];
+        for(int i=lenMapeo;i > c ;i--){
+            mapeo[i]=mapeo[i-1];
         }
         if(cursorY>48){
             moverDerecha();
         }
     }
-    //mapeo[lenMapeo-1]=' '; 
+    mapeo[c] = caracter; 
 }
 
 
@@ -273,10 +267,19 @@ static int accionDelUsuario( char *mapeo ) {
         borrarCaracter(mapeo);
         break;
     case 0x1B5B327E:
-        insertarChar(mapeo);
-        break;
+        if(option == 0){
+            option = 1;
+        }
+        else{
+            option = 0;
+        }
     default: 
-        editaArchivo(caracter, mapeo);
+        if(option == 0){
+            editaArchivo(caracter, mapeo);
+        }
+        else{
+            insertarChar(caracter, mapeo);
+        }
     }
 
     return caracter;
