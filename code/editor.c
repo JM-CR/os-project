@@ -234,7 +234,7 @@ static void insertarChar(int caracter, char *mapeo){
         for(int i=lenMapeo;i > c ;i--){
             mapeo[i]=mapeo[i-1];
         }
-        if(cursorX>48 &&cursorX<64){
+        if(cursorX<64){
             moverDerecha();
         }
     }
