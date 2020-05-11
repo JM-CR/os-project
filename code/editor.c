@@ -260,7 +260,6 @@ static int accionDelUsuario( char *mapeo ) {
         moverDerecha(); 
         break;
     case 0x1B5B44:
-        moverIzquierda(); 
         break;
     case 0x18:  /* Salir */
         break;
@@ -274,6 +273,7 @@ static int accionDelUsuario( char *mapeo ) {
         else{
             option = 0;
         }
+        break;
     default: 
         if(option == 0){
             editaArchivo(caracter, mapeo);
@@ -282,7 +282,6 @@ static int accionDelUsuario( char *mapeo ) {
             insertarChar(caracter, mapeo);
         }
     }
-
     return caracter;
 }
 
