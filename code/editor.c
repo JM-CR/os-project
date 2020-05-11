@@ -289,6 +289,7 @@ static int accionDelUsuario( char *mapeo ) {
         moverDerecha(); 
         break;
     case 0x1B5B44:
+        moverIzquierda();
         break;
     case 0x18:  /* Salir */
         break;
