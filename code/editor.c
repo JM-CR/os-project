@@ -218,8 +218,14 @@ static void insertarChar(int caracter, char *mapeo){
     int c= indiceInsercion(); 
     if ( cursorY < 48 ) {
         for(int i = lenMapeo; i > c ; i-- ){
-            mapeo[i]=mapeo[i-1];
-            mapeo[i-1]=mapeo[i-2];
+            if(c != 0){
+                mapeo[i]=mapeo[i-1];
+                mapeo[i-1]=mapeo[i-2];
+            }
+            else{
+                mapeo[i]=mapeo[i-1];
+                mapeo[i-1]=mapeo[i-1];
+            }
         }
         if(cursorX>1 && cursorX<48){
             moverDerecha();
@@ -232,7 +238,30 @@ static void insertarChar(int caracter, char *mapeo){
             moverDerecha();
         }
     }
-    mapeo[c] = caracter; 
+    // mapeo[c] = caracter; 
+    if ( cursorY < 48 ) {
+        // Leer primer caracter
+        char c1 = tolower(caracter);
+        mvprintw(27, 5, "Valor detectado: 0x%c.\n", c1);
+
+        // Leer segunda caracter
+        char c2 = tolower(leeChar());
+
+        // Validar
+        if ( isxdigit(c1) && isxdigit(c2) ) {
+            mapeo[indiceInsercion()] = char2hex(c1, c2);
+            sprintf(msg, "Ultimo valor insertado: 0x%c%c.\n", c1, c2);
+        } else {
+            sprintf(msg, "Combinacion invalida.\n");
+        }
+    } else {
+        if ( caracter < 256 && isprint(caracter) ) {
+            mapeo[indiceInsercion()] = caracter;
+            sprintf(msg, "Ultimo valor insertado: %c\n", caracter);
+        } else {
+            sprintf(msg, "Caracter invalido.\n");
+        }
+    }
 }
 
 
