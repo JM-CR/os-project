@@ -194,7 +194,7 @@ static void borrarCaracter(char *mapeo){
     int len = strlen(mapeo);
     int c= indiceInsercion(); 
     if ( cursorY < 48 ) {
-        for(int i=0;i<len;i++){
+        for(int i=0;i<len-1;i++){
             mapeo[c+i]=mapeo[c+1+i];
             mapeo[c+i+1]=mapeo[c+2+i];
         }
@@ -202,7 +202,7 @@ static void borrarCaracter(char *mapeo){
             moverIzquierda();
         } 
     } else {
-        for(int i=0;i<len;i++){
+        for(int i=0;i<len-1;i++){
             mapeo[c+i]=mapeo[c+1+i];
         }
         if(cursorY>48){
@@ -214,8 +214,7 @@ static void borrarCaracter(char *mapeo){
 
 static void insertarChar(int caracter, char *mapeo){
     int lenMapeo = strlen(mapeo);
-    int c= indiceInsercion();
-    mapeo[indiceInsercion()]=delch(); 
+    int c= indiceInsercion(); 
     if ( cursorY < 48 ) {
         for(int i = lenMapeo; i > c ; i-- ){
             mapeo[i]=mapeo[i-1];
@@ -229,7 +228,7 @@ static void insertarChar(int caracter, char *mapeo){
         for(int i=lenMapeo;i > c ;i--){
             mapeo[i]=mapeo[i-1];
         }
-        if(cursorX>48 && cursorX<64){
+        if(cursorX>48 &&cursorX<64){
             moverDerecha();
         }
     }
