@@ -26,6 +26,7 @@ static int cursorY;       // Posición del cursor en Y.
 static int lineaActiva;   // Línea de lectura activa.
 static char msg[50];      // Mensaje global de estado
 static int option = 0;    // Tipo de edicion
+static int len;
 
 /* Private functions */
 
@@ -191,19 +192,19 @@ static void editaArchivo( int caracter, char *mapeo ) {
 }
 
 static void borrarCaracter(char *mapeo){
-    int len = strlen(mapeo);
+    len = strlen(mapeo);
     int c= indiceInsercion(); 
     if ( cursorY < 48 ) {
-        for(int i=0;i<len-1;i++){
-            mapeo[c+i]=mapeo[c+1+i];
-            mapeo[c+i+1]=mapeo[c+2+i];
+        for(int i=c;i<len-1;i++){
+            mapeo[i]=mapeo[1+i];
+            mapeo[i+1]=mapeo[2+i];
         }
         if(cursorY>1){
             moverIzquierda();
         } 
     } else {
-        for(int i=0;i<len-1;i++){
-            mapeo[c+i]=mapeo[c+1+i];
+        for(int i=c;i<len-1;i++){
+            mapeo[i]=mapeo[1+i];
         }
         if(cursorY>48){
             moverIzquierda();
