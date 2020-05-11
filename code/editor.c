@@ -223,7 +223,6 @@ static void insertarChar(int caracter, char *mapeo){
         }
         if(cursorX>1 && cursorX<48){
             moverDerecha();
-            moverDerecha();
         } 
     } else {
         for(int i=lenMapeo;i > c ;i--){
@@ -268,7 +267,7 @@ static int accionDelUsuario( char *mapeo ) {
     case 0x7F:
         borrarCaracter(mapeo);
         break;
-    case 0x1B5B327E:
+    case 0x9:
         if(option == 0){
             option = 1;
         }
