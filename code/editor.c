@@ -214,20 +214,22 @@ static void borrarCaracter(char *mapeo){
 
 static void insertarChar(int caracter, char *mapeo){
     int lenMapeo = strlen(mapeo);
-    int c= indiceInsercion(); 
+    int c= indiceInsercion();
+    mapeo[indiceInsercion()]=delch(); 
     if ( cursorY < 48 ) {
         for(int i = lenMapeo; i > c ; i-- ){
             mapeo[i]=mapeo[i-1];
             mapeo[i-1]=mapeo[i-2];
         }
-        if(cursorY>1){
+        if(cursorX>1 && cursorX<48){
+            moverDerecha();
             moverDerecha();
         } 
     } else {
         for(int i=lenMapeo;i > c ;i--){
             mapeo[i]=mapeo[i-1];
         }
-        if(cursorY>48){
+        if(cursorX>48 && cursorX<64){
             moverDerecha();
         }
     }
